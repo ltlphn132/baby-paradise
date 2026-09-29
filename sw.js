@@ -1,7 +1,7 @@
 /* 宝宝乐园 离线缓存 Service Worker
    策略：打开页面 = 网络优先（1.2 秒内没响应就用本地缓存，所以有网时自动更新到最新版）
         其他资源 = 缓存优先，缓存没有才联网 */
-var CACHE = 'bbly-v5';
+var CACHE = 'bbly-v7';
 var ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-512.png', './voice.mp3', './voice.json'];
 
 self.addEventListener('install', function(e){

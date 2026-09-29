@@ -14,7 +14,7 @@
 <style>
   :root{
     --bg1:#fff6e9; --bg2:#eafaff;
-    --c-pinyin:#ff7a59; --c-math:#37b6ff; --c-english:#8a6bff; --c-word:#33c88a; --c-poem:#ff9f43;
+    --c-pinyin:#ff7a59; --c-math:#37b6ff; --c-english:#8a6bff; --c-word:#33c88a; --c-poem:#ff9f43; --c-game:#12b5cb;
     --ink:#3a3a55; --card:#ffffff;
     --shadow:0 8px 0 rgba(0,0,0,.08);
   }
@@ -71,6 +71,7 @@
   .big.english{background:linear-gradient(160deg,#a893ff,var(--c-english));}
   .big.word{background:linear-gradient(160deg,#5fe0a6,var(--c-word));}
   .big.poem{background:linear-gradient(160deg,#ffd166,var(--c-poem));}
+  .big.game{background:linear-gradient(160deg,#5ad1e6,var(--c-game));}
   .big.wide{grid-column:span 2;}
   .big.off{display:none;}
 
@@ -87,6 +88,7 @@
   .tab.on.english{background:var(--c-english);}
   .tab.on.word{background:var(--c-word);}
   .tab.on.poem{background:var(--c-poem);}
+  .tab.on.game{background:var(--c-game);}
 
   /* ---------- 卡片网格 ---------- */
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
@@ -134,6 +136,36 @@
   .poemtitle .au{font-size:13px;font-weight:700;opacity:.5;}
   .poemcard .line{font-size:19px;font-weight:800;padding:5px 6px;border-radius:10px;}
   .poemcard .line:active{background:#fff3e2;}
+
+  /* 游戏乐园 */
+  .gamebar,.findgrid,.crowd,.chint,.bubarea,.sgrid{grid-column:1/-1}
+  .gamebar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:var(--shadow)}
+  .gamebar .q{font-size:24px;font-weight:900;flex:1}
+  .gamebar .replay{border:none;background:var(--c-game);color:#fff;width:56px;height:56px;border-radius:14px;font-size:24px;cursor:pointer;flex:none}
+  .findgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .findgrid.four{grid-template-columns:repeat(2,1fr)}
+  .findcard{background:#fff;border-radius:22px;min-height:130px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;font-size:60px;cursor:pointer;transition:transform .1s,opacity .3s}
+  .findcard:active{transform:scale(.96)}
+  .findcard.right{outline:6px solid #33c88a}
+  .findcard.wrong{opacity:.35;animation:wob .4s}
+  @keyframes wob{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  .crowd{display:flex;flex-wrap:wrap;gap:22px;justify-content:center;background:#fff;border-radius:22px;padding:28px 14px;box-shadow:var(--shadow)}
+  .citem{font-size:62px;cursor:pointer;position:relative;transition:transform .1s,opacity .3s}
+  .citem:active{transform:scale(.9)}
+  .citem.counted{opacity:.4;transform:scale(.88)}
+  .citem.counted::after{content:attr(data-n);position:absolute;top:-12px;right:-12px;background:var(--c-game);color:#fff;font-size:20px;font-weight:900;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .chint{text-align:center;font-size:20px;font-weight:800;opacity:.6}
+  .bubarea{position:relative;height:440px;overflow:hidden;border-radius:22px;background:linear-gradient(180deg,#d9f3ff,#f0fbff);box-shadow:var(--shadow);touch-action:none}
+  .bubw{position:absolute;bottom:-100px;animation:rise linear forwards}
+  @keyframes rise{from{transform:translateY(0)}to{transform:translateY(-620px)}}
+  .bub{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;cursor:pointer;box-shadow:inset -6px -8px 0 rgba(0,0,0,.08)}
+  .bub.pop{animation:pop .22s forwards}
+  @keyframes pop{to{transform:scale(1.7);opacity:0}}
+  .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .scard{background:#fff;border-radius:22px;min-height:140px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+  .scard:active{transform:scale(.97)}
+  .scard .emoji{font-size:56px}
+  .scard .nm{font-size:24px;font-weight:900}
 
   /* 家长面板 */
   .mask{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:50;padding:16px;}
@@ -187,7 +219,8 @@
       <button class="big math" data-go="math"><span class="em">🔢</span>数 学<span class="sub">数字 · 比大小 · 加减 · 图形</span></button>
       <button class="big english" data-go="english"><span class="em">🔤</span>英 语<span class="sub">字母 · 单词 · 拼读</span></button>
       <button class="big word" data-go="word"><span class="em">🐶</span>认 知<span class="sub">动物 · 水果 · 身体 · 交通…</span></button>
-      <button class="big poem wide" data-go="poem"><span class="em">📖</span>古 诗<span class="sub">咏鹅 · 静夜思 · 春晓 · 悯农…</span></button>
+      <button class="big game" data-go="game"><span class="em">🎮</span>游戏乐园<span class="sub">找一找 · 数一数 · 泡泡</span></button>
+      <button class="big poem" data-go="poem"><span class="em">📖</span>古 诗<span class="sub">咏鹅 · 静夜思 · 春晓 · 悯农…</span></button>
     </div>
   </section>
 
@@ -214,7 +247,7 @@ var state = {
   soundOn: true,
   zhVoiceName: null, // 家长选定的中文声音
   enVoiceName: null, // 家长选定的英文声音
-  sections: {pinyin:true, math:true, english:true, word:true, poem:true}
+  sections: {pinyin:true, math:true, english:true, word:true, poem:true, game:true}
 };
 function saveState(){
   try{
@@ -408,11 +441,11 @@ function praise(msg){
 /* ============ 内容数据 ============ */
 // 声母（呼读音 + 例字）
 var SHENGMU = [
- ["b","玻","爸爸"],["p","坡","苹果"],["m","摸","妈妈"],["f","飞","飞机"],
- ["d","嘟","嘟嘟"],["t","踢","踢球"],["n","捏","捏泥巴"],["l","拉","拉大锯"],
+ ["b","玻","爸爸"],["p","坡","苹果"],["m","摸","妈妈"],["f","佛","飞机"],
+ ["d","得","弟弟"],["t","特","台灯"],["n","讷","牛奶"],["l","勒","老虎"],
  ["g","哥","哥哥"],["k","科","恐龙"],["h","喝","喝水"],
  ["j","基","鸡蛋"],["q","欺","气球"],["x","西","西瓜"],
- ["zh","知","蜘蛛"],["ch","吃","吃饭"],["sh","诗","狮子"],["r","扔","扔球"],
+ ["zh","知","蜘蛛"],["ch","吃","吃饭"],["sh","诗","狮子"],["r","日","日出"],
  ["z","资","紫色"],["c","雌","刺猬"],["s","思","松鼠"],
  ["y","衣","衣服"],["w","乌","乌鸦"]
 ];
@@ -486,6 +519,14 @@ var POEMS = [
  {t:"画",a:"王维",e:"🎨",l:["远看山有色","近听水无声","春去花还在","人来鸟不惊"]}
 ];
 
+// 游戏乐园数据
+var ANIMAL_SOUND = [
+ ["🐱","小猫","喵"],["🐶","小狗","汪汪"],["🐮","小牛","哞"],["🐑","小羊","咩"],["🦆","小鸭","嘎嘎"],
+ ["🐤","小鸡","叽叽"],["🐸","青蛙","呱呱"],["🐝","蜜蜂","嗡嗡"],["🐯","大老虎","嗷呜"],["🐔","大公鸡","喔喔"]
+];
+var GAME_TEXTS = ["找一找","答对啦","再找找","你好棒","数一数","一共","个","喵","汪汪","哞","咩","嘎嘎","叽叽","呱呱","嗡嗡","嗷呜","喔喔"];
+var FIND_EMOJI = ["🍎","🐶","⭐","🎈","🚗","🐟","🍌","🦆"];
+
 /* ============ 屏幕/科目路由 ============ */
 var SUBJECTS = {
   pinyin:{ title:"🀄 拼音乐园", color:"pinyin", tabs:[
@@ -516,6 +557,12 @@ var SUBJECTS = {
     {name:"交通", build:function(g){buildWords('交通',g);}},
     {name:"用品", build:function(g){buildWords('用品',g);}}
   ]},
+  game:{ title:"🎮 游戏乐园", color:"game", tabs:[
+    {name:"听声找图", build:buildFind},
+    {name:"数一数", build:buildCount},
+    {name:"泡泡乐", build:buildBubbles},
+    {name:"动物叫声", build:buildSounds}
+  ]},
   poem:{ title:"📖 古诗乐园", color:"poem", tabs:[
     {name:"必背五言", build:buildPoems}
   ]}
@@ -524,6 +571,7 @@ var SUBJECTS = {
 var curSub=null, curTab=0;
 
 function goHome(){
+  if (window.__bubbleTimer) { clearInterval(window.__bubbleTimer); window.__bubbleTimer = null; }
   document.getElementById('screen-home').classList.remove('hidden');
   document.getElementById('screen-subject').classList.add('hidden');
   document.getElementById('btnHome').style.display='none';
@@ -551,6 +599,7 @@ function renderTabs(){
   });
 }
 function renderTab(){
+  if (window.__bubbleTimer) { clearInterval(window.__bubbleTimer); window.__bubbleTimer = null; }
   var grid=document.getElementById('grid');
   grid.className='grid'+(curSub==='poem'?' poemgrid':'');
   grid.innerHTML='';
@@ -760,6 +809,159 @@ function buildPoems(grid){
   });
 }
 
+/* ============ 游戏乐园 ============ */
+var FIND_POOL = [];
+(function(){
+  for (var tp in WORDS) WORDS[tp].forEach(function(it){ FIND_POOL.push({disp: it[0], say: it[2], lang: 'zh'}); });
+  SHAPES.forEach(function(s){ FIND_POOL.push({svg: s.svg, color: s.c, say: s.n, lang: 'zh'}); });
+  for (var n = 1; n <= 10; n++) FIND_POOL.push({disp: String(n), say: NUM[n], lang: 'zh', digit: true});
+})();
+function shuffle(a){
+  a = a.slice();
+  for (var i = a.length - 1; i > 0; i--) { var j = rand(i + 1); var t = a[i]; a[i] = a[j]; a[j] = t; }
+  return a;
+}
+
+function buildFind(grid){
+  var streak = 0;
+  function round(){
+    grid.innerHTML = '';
+    var n = streak >= 3 ? 4 : 3;
+    var pool = shuffle(FIND_POOL);
+    var pick = pool[0];
+    var others = [];
+    for (var i = 1; i < pool.length && others.length < n - 1; i++) {
+      if (pool[i].say !== pick.say) others.push(pool[i]);
+    }
+    var cards = shuffle([pick].concat(others));
+    var bar = document.createElement('div'); bar.className = 'gamebar';
+    bar.innerHTML = '<div class="q">🔊 找一找：' + pick.say + '</div>';
+    var rp = document.createElement('button'); rp.className = 'replay'; rp.textContent = '🔁';
+    rp.onclick = function(ev){ ev.stopPropagation(); ding(); speakSeq([{t:'找一找',l:'zh'},{t:pick.say,l:'zh'}]); };
+    bar.appendChild(rp);
+    grid.appendChild(bar);
+    var fg = document.createElement('div'); fg.className = 'findgrid' + (n === 4 ? ' four' : '');
+    cards.forEach(function(it){
+      var card = document.createElement('div'); card.className = 'findcard';
+      if (it.svg) card.innerHTML = '<svg viewBox="0 0 72 72" class="shape"><g fill="' + it.color + '">' + it.svg + '</g></svg>';
+      else if (it.digit) card.innerHTML = '<div class="big-txt" style="font-size:72px">' + it.disp + '</div>';
+      else card.textContent = it.disp;
+      card.onclick = function(){
+        if (it.say === pick.say) {
+          card.classList.add('right');
+          streak++;
+          praise('答对啦!');
+          speak('答对啦', 'zh');
+          setTimeout(function(){ if (curSub === 'game' && curTab === 0) round(); }, 1600);
+        } else {
+          card.classList.add('wrong');
+          speakSeq([{t:'再找找',l:'zh'},{t:'找一找',l:'zh'},{t:pick.say,l:'zh'}]);
+          setTimeout(function(){ card.classList.remove('wrong'); }, 900);
+        }
+      };
+      fg.appendChild(card);
+    });
+    grid.appendChild(fg);
+    ding();
+    speakSeq([{t:'找一找',l:'zh'},{t:pick.say,l:'zh'}]);
+  }
+  round();
+}
+
+function buildCount(grid){
+  function round(){
+    grid.innerHTML = '';
+    var n = 1 + rand(5);
+    var emo = FIND_EMOJI[rand(FIND_EMOJI.length)];
+    var wrap = document.createElement('div'); wrap.className = 'crowd';
+    var counted = 0;
+    var done = false;
+    for (var i = 0; i < n; i++) {
+      (function(it){
+        it.className = 'citem';
+        it.textContent = emo;
+        it.onclick = function(){
+          if (it.counted || done) return;
+          counted++;
+          it.counted = true;
+          it.classList.add('counted');
+          it.setAttribute('data-n', counted);
+          speak(NUM[counted - 1], 'zh');
+          if (counted === n) {
+            done = true;
+            setTimeout(function(){
+              if (!(curSub === 'game' && curTab === 1)) return;
+              speakSeq([{t:'一共',l:'zh'},{t:NUM[n-1],l:'zh'},{t:'个',l:'zh'}]);
+              praise('一共 ' + n + ' 个!');
+              setTimeout(function(){ if (curSub === 'game' && curTab === 1) round(); }, 2400);
+            }, 500);
+          }
+        };
+        wrap.appendChild(it);
+      })(document.createElement('div'));
+    }
+    grid.appendChild(wrap);
+    var hint = document.createElement('div'); hint.className = 'chint'; hint.textContent = '👆 点一点，数一数';
+    grid.appendChild(hint);
+    speak('数一数', 'zh');
+  }
+  round();
+}
+
+function buildBubbles(grid){
+  if (window.__bubbleTimer) { clearInterval(window.__bubbleTimer); window.__bubbleTimer = null; }
+  var area = document.createElement('div'); area.className = 'bubarea';
+  grid.appendChild(area);
+  var COLORS = ['#ff6b6b','#4dabf7','#51cf66','#ffa94d','#845ef7','#f783ac'];
+  function content(){
+    if (rand(2) === 0) { var L = String.fromCharCode(65 + rand(26)); return {disp: L, say: L, lang: 'en'}; }
+    var n = 1 + rand(10);
+    return {disp: String(n), say: NUM[n], lang: 'zh'};
+  }
+  function spawn(){
+    var w = document.createElement('div'); w.className = 'bubw';
+    var size = 64 + rand(30);
+    var it = content();
+    var b = document.createElement('div'); b.className = 'bub';
+    b.style.width = size + 'px'; b.style.height = size + 'px';
+    b.style.background = COLORS[rand(COLORS.length)];
+    b.style.fontSize = Math.round(size * 0.42) + 'px';
+    b.textContent = it.disp;
+    w.style.left = (4 + rand(72)) + '%';
+    w.style.animationDuration = (6 + rand(4)) + 's';
+    w.appendChild(b);
+    b.onclick = function(){
+      if (b.__popped) return;
+      b.__popped = true;
+      tone(880, 0, .1, 'sine', .25);
+      b.classList.add('pop');
+      speak(it.say, it.lang);
+      setTimeout(function(){ if (w.parentNode) w.parentNode.removeChild(w); }, 240);
+    };
+    w.addEventListener('animationend', function(){ if (w.parentNode) w.parentNode.removeChild(w); });
+    area.appendChild(w);
+  }
+  for (var i = 0; i < 3; i++) spawn();
+  window.__bubbleTimer = setInterval(function(){
+    if (area.parentNode && area.querySelectorAll('.bubw').length < 6) spawn();
+  }, 1200);
+}
+
+function buildSounds(grid){
+  var sg = document.createElement('div'); sg.className = 'sgrid';
+  ANIMAL_SOUND.forEach(function(it){
+    var c = document.createElement('div'); c.className = 'scard';
+    c.innerHTML = '<div class="emoji">' + it[0] + '</div><div class="nm">' + it[1] + '</div>';
+    c.onclick = function(){
+      ding();
+      speakSeq([{t:it[1],l:'zh'},{t:it[2],l:'zh'}]);
+      toast(it[1] + ' ' + it[2]);
+    };
+    sg.appendChild(c);
+  });
+  grid.appendChild(sg);
+}
+
 /* ============ 首页大按钮 ============ */
 document.querySelectorAll('.big').forEach(function(b){
   b.onclick=function(){ var k=b.getAttribute('data-go'); if(!state.sections[k]) return; pop(); openSubject(k); };
@@ -832,6 +1034,7 @@ function renderPanel(){
   panel.appendChild(switchRow('🔤 英语', state.sections.english, function(v){state.sections.english=v; applySections(); saveState();}));
   panel.appendChild(switchRow('🐶 认知词卡', state.sections.word, function(v){state.sections.word=v; applySections(); saveState();}));
   panel.appendChild(switchRow('📖 古诗', state.sections.poem, function(v){state.sections.poem=v; applySections(); saveState();}));
+  panel.appendChild(switchRow('🎮 游戏乐园', state.sections.game, function(v){state.sections.game=v; applySections(); saveState();}));
   panel.appendChild(switchRow('🔊 音效', state.soundOn, function(v){state.soundOn=v; btnSound.textContent=v?'🔊':'🔇'; saveState();}));
 
   // 语速（默认放得很慢）

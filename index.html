@@ -788,6 +788,11 @@ function renderPanel(){
   voiceRow('🇨🇳 中文声音', zhList, 'zhVoiceName', '宝宝你好呀，我们一起读书吧！', 'zh');
   voiceRow('🇺🇸 英文声音', enList, 'enVoiceName', 'Hello! Great job!', 'en');
 
+  // 声音检测：显示本机实际暴露给网页的声音数量，方便排查
+  var cnt=document.createElement('div'); cnt.className='hint2'; cnt.style.marginTop='8px';
+  cnt.textContent='声音检测：本机网页可用声音共 '+vs.length+' 个，其中中文 '+zhList.length+' 个、英文 '+enList.length+' 个。在系统里新下载声音后，需彻底关闭本页再重开才会出现；iOS 最新的“高音质”级声音不开放给网页，请下载“优化音质”级（如婷婷·优化音质）。';
+  panel.appendChild(cnt);
+
   var vTip=document.createElement('div'); vTip.className='hint2'; vTip.style.marginTop='8px';
   vTip.textContent='小贴士：声音的多少由 iPad 决定。去「设置 → 辅助功能 → 朗读内容 → 声音 → 中文（中国）」可以免费下载更多人声——凡是标着“增强 / 优质”的都值得下载（如婷婷·增强），温柔自然得多。下载后回到这里，列表会自动变多，带 ★ 的就是高质量声音，选中后点 🔊 试听。';
   panel.appendChild(vTip);

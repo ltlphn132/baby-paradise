@@ -239,6 +239,8 @@ var speakQueue=[], speaking=false, speakGen=0;
 // 自动挑选更温柔的声线：优先常见的女声/童声，优先"增强/优质"音色
 var ZH_PREFER = ['婷婷','tingting','ting-ting','晓晓','xiaoxiao','朵朵','云希','美佳','meijia','雅婷','yating'];
 var EN_PREFER = ['samantha','victoria','ava','allison','karen','moira','tessa','zoe','susan','fiona'];
+// 高质量人声识别（iOS 新版叫"优化音质/高音质"，旧版叫"增强/优质"）
+var HQ_RE = /enhanced|premium|high\s*quality|optimi|增强|优质|高音质|优化|siri/i;
 function pickVoice(list, savedName, langPrefix, prefer){
   var i, v;
   if(savedName){ for(i=0;i<list.length;i++){ if(list[i].name===savedName) return list[i]; } }
@@ -248,7 +250,7 @@ function pickVoice(list, savedName, langPrefix, prefer){
     if(v.lang.toLowerCase().indexOf(langPrefix)!==0) continue;
     var s=0, n=v.name.toLowerCase();
     for(var p=0;p<prefer.length;p++){ if(n.indexOf(prefer[p])>=0){ s=Math.max(s, prefer.length-p+2); break; } }
-    if(/enhanced|premium|增强|优质|siri/i.test(v.name)) s+=5;
+    if(HQ_RE.test(v.name)) s+=20;
     if(langPrefix==='zh' && /cn|cmn|mandarin|普通话|guoyu/i.test(v.lang+v.name)) s+=3;
     if(langPrefix==='en' && /us/i.test(v.lang)) s+=2;
     if(/female|女/i.test(v.name)) s+=1;
@@ -716,7 +718,7 @@ function voiceRow(label, list, key, sample, sampleLang){
   var auto=document.createElement('option'); auto.value=''; auto.textContent='自动（推荐）'; sel.appendChild(auto);
   list.forEach(function(v){
     var o=document.createElement('option'); o.value=v.name;
-    o.textContent=v.name+(/enhanced|premium|增强|优质/i.test(v.name)?' ★':'');
+    o.textContent=v.name+(HQ_RE.test(v.name)?' ★':'');
     sel.appendChild(o);
   });
   sel.value=state[key]||'';
@@ -775,7 +777,7 @@ function renderPanel(){
 
   // 声音选择（试听后挑选，iPad 会记住）
   // 排序：增强/优质人声排最前，大陆/美国口音优先，紧凑音色靠后
-  function vQuality(v){ return /enhanced|premium|增强|优质|siri/i.test(v.name) ? 8 : (/compact|紧凑/i.test(v.name) ? -2 : 0); }
+  function vQuality(v){ return HQ_RE.test(v.name) ? 20 : (/compact|紧凑/i.test(v.name) ? -2 : 0); }
   function vRegion(v, pre){ var l=v.lang.toLowerCase(); return (l.indexOf(pre)===0 && (l.indexOf('cn')>=0 || l.indexOf('us')>=0)) ? 4 : 0; }
   function nicer(list, pre){
     return list.slice().sort(function(a,b){ return (vQuality(b)+vRegion(b,pre)) - (vQuality(a)+vRegion(a,pre)); });

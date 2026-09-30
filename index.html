@@ -138,7 +138,7 @@
   .poemcard .line:active{background:#fff3e2;}
 
   /* 游戏乐园 */
-  .gamebar,.findgrid,.crowd,.chint,.bubarea,.sgrid{grid-column:1/-1}
+  .gamebar,.findgrid,.crowd,.chint,.bubarea,.sgrid,.scalewrap{grid-column:1/-1}
   .gamebar{display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:var(--shadow)}
   .gamebar .q{font-size:24px;font-weight:900;flex:1}
   .gamebar .replay{border:none;background:var(--c-game);color:#fff;width:56px;height:56px;border-radius:14px;font-size:24px;cursor:pointer;flex:none}
@@ -171,8 +171,11 @@
   .pole{position:absolute;left:50%;top:62px;margin-left:-9px;width:18px;height:72px;background:#c8c8d8;border-radius:6px}
   .base{position:absolute;left:50%;top:130px;margin-left:-46px;width:92px;height:16px;background:#c8c8d8;border-radius:8px}
   .tray{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:12px 0 4px}
-  .trayit{font-size:46px;cursor:pointer;transition:transform .1s,opacity .3s}
+  .trayit{font-size:46px;cursor:pointer;transition:transform .1s,opacity .3s;touch-action:none}
   .trayit:active{transform:scale(.85)}
+  .dragghost{position:fixed;transform:translate(-50%,-50%);font-size:54px;pointer-events:none;z-index:999;opacity:0;transition:opacity .15s}
+  .dragghost.on{opacity:.95}
+  .pan.right.drop-ready{outline:5px solid #ffd166;background:#fff8e1}
   .balhint{text-align:center;font-size:20px;font-weight:800;opacity:.6;padding-bottom:14px}
   .sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
   .scard{background:#fff;border-radius:22px;min-height:140px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
@@ -900,7 +903,7 @@ function buildCount(grid){
           it.counted = true;
           it.classList.add('counted');
           it.setAttribute('data-n', counted);
-          speak(NUM[counted - 1], 'zh');
+          speak(NUM[counted], 'zh');
           if (counted === n) {
             done = true;
             setTimeout(function(){
@@ -982,13 +985,15 @@ function buildBalance(grid){
     var n = 1 + rand(5);
     var it = BAL_ITEMS[rand(BAL_ITEMS.length)];
     var placed = 0, done = false;
+    function tilt(){ return -((n - placed) / n) * 16; }
     var wrap = document.createElement('div'); wrap.className = 'scalewrap';
     var bw = document.createElement('div'); bw.className = 'beamwrap';
     var beam = document.createElement('div'); beam.className = 'beam';
     var lp = document.createElement('div'); lp.className = 'pan left';
-    lp.innerHTML = '<div class="digit">' + NUM[n-1] + '</div>';
+    lp.innerHTML = '<div class="digit">' + n + '</div>';
     var rp = document.createElement('div'); rp.className = 'pan right';
     beam.appendChild(lp); beam.appendChild(rp);
+    beam.style.transform = 'rotate(' + tilt() + 'deg)';
     bw.appendChild(beam);
     var pole = document.createElement('div'); pole.className = 'pole';
     var base = document.createElement('div'); base.className = 'base';
@@ -997,37 +1002,84 @@ function buildBalance(grid){
     var tray = document.createElement('div'); tray.className = 'tray';
     var tip = function(t){
       t.className = 'trayit';
-      t.textContent = it.emoji;
-      t.onclick = function(){
+      t.textContent = it[0];
+      t.style.touchAction = 'none';
+      function place(){
         if (done || t.__used) return;
         t.__used = true;
         t.style.opacity = .22;
         placed++;
-        var s = document.createElement('span'); s.textContent = it.emoji;
+        var s = document.createElement('span'); s.textContent = it[0];
         rp.appendChild(s);
-        speak(NUM[placed - 1], 'zh');
-        beam.style.transform = 'rotate(' + Math.max(-16, Math.min(16, (placed - n) * 7)) + 'deg)';
+        speak(NUM[placed], 'zh');
+        beam.style.transform = 'rotate(' + tilt() + 'deg)';
         if (placed === n) {
           done = true;
-          beam.style.transform = 'rotate(0deg)';
           setTimeout(function(){
             if (!(curSub === 'game' && curTab === 2)) return;
             praise('正好!');
-            speakSeq([{t:NUM[n-1],l:'zh'},{t:'个',l:'zh'}]);
+            speakSeq([{t:NUM[n],l:'zh'},{t:'个',l:'zh'}]);
             setTimeout(function(){ if (curSub === 'game' && curTab === 2) round(); }, 2600);
           }, 650);
         }
-      };
+      }
+      function overPan(x, y){
+        var r = rp.getBoundingClientRect();
+        return x > r.x - 50 && x < r.right + 50 && y > r.y - 70 && y < r.bottom + 40;
+      }
+      t.addEventListener('pointerdown', function(e){
+        if (done || t.__used) return;
+        var sx = e.clientX, sy = e.clientY, moved = false;
+        var ghost = document.createElement('div'); ghost.className = 'dragghost';
+        ghost.textContent = it[0];
+        ghost.style.left = sx + 'px'; ghost.style.top = sy + 'px';
+        document.body.appendChild(ghost);
+        var pid = e.pointerId;
+        try { t.setPointerCapture(pid); } catch(err){}
+        function move(ev){
+          if (ev.pointerId !== pid) return;
+          if (!moved && Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) > 12) {
+            moved = true;
+            t.style.opacity = .25;
+            ghost.classList.add('on');
+          }
+          if (moved) {
+            ghost.style.left = ev.clientX + 'px'; ghost.style.top = ev.clientY + 'px';
+            rp.classList.toggle('drop-ready', overPan(ev.clientX, ev.clientY));
+          }
+        }
+        function finish(ev){
+          if (ev.pointerId !== pid) return;
+          t.removeEventListener('pointermove', move);
+          t.removeEventListener('pointerup', finish);
+          t.removeEventListener('pointercancel', cancel);
+          rp.classList.remove('drop-ready');
+          if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+          if (!moved || overPan(ev.clientX, ev.clientY)) place();
+          else t.style.opacity = '';
+        }
+        function cancel(){
+          t.removeEventListener('pointermove', move);
+          t.removeEventListener('pointerup', finish);
+          t.removeEventListener('pointercancel', cancel);
+          rp.classList.remove('drop-ready');
+          if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+          t.style.opacity = '';
+        }
+        t.addEventListener('pointermove', move);
+        t.addEventListener('pointerup', finish);
+        t.addEventListener('pointercancel', cancel);
+      });
       tray.appendChild(t);
     };
     for (var i = 0; i < n + 3; i++) tip(document.createElement('div'));
     wrap.appendChild(tray);
     var hint = document.createElement('div'); hint.className = 'balhint';
-    hint.textContent = '👆 点' + it.name + '，放到天平上';
+    hint.textContent = '👆 把' + it[1] + '拖上天平（点一点也行）';
     wrap.appendChild(hint);
     grid.appendChild(wrap);
     ding();
-    speak('放' + NUM[n-1] + '个', 'zh');
+    speak('放' + NUM[n] + '个', 'zh');
   }
   round();
 }
